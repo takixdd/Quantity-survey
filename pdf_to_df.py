@@ -138,6 +138,7 @@ def faktury_database():
             df2['Firma'] = 'Sidus'
 
             sidusdate = ()
+
             faktury = open("faktury.txt", "w+", encoding="utf-8")
             reader = PdfReader(file)
             page = reader.pages[0]
