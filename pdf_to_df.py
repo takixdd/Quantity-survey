@@ -138,7 +138,6 @@ def faktury_database():
             df2['Firma'] = 'Sidus'
 
             sidusdate = ()
-
             faktury = open("faktury.txt", "w+", encoding="utf-8")
             reader = PdfReader(file)
             page = reader.pages[0]
@@ -184,7 +183,7 @@ def faktury_database():
 
         df = pd.DataFrame(data=None)
 
-        # Possible to get this in 1 line but this will look unreadable
+        # Possible to get this in 1 line but this will look unreadable and ugly
         material.append(re.findall('1\. .+\n+2|1. .+\n+PODSUMOWANIE', text))
         material.append(re.findall('2\. .+\n+3|2. .+\n+PODSUMOWANIE', text))
         material.append(re.findall('3\. .+\n+4|3. .+\n+PODSUMOWANIE', text))
@@ -268,10 +267,12 @@ def faktury_database():
     writer = pd.ExcelWriter('Faktury materiały.xlsx')
     df.to_excel(writer, sheet_name='Sheet1', index=False, na_rep='NaN')
 
-    for column in df:
-        column_length = max(df[column].astype(str).map(len).max(), len(column))
-        col_idx = df.columns.get_loc(column)
-        writer.sheets['Sheet1'].set_column(col_idx, col_idx, column_length)
+    writer.sheets['Sheet1'].set_column(0, 0, 7)
+    writer.sheets['Sheet1'].set_column(1, 1, 10)
+    writer.sheets['Sheet1'].set_column(2, 2, 60)
+    writer.sheets['Sheet1'].set_column(3, 3, 5)
+    writer.sheets['Sheet1'].set_column(4, 4, 7)
+    writer.sheets['Sheet1'].set_column(5, 5, 14)
 
     writer._save()
     subprocess.check_call(["attrib", "+H", "outpdf.xlsx"])
