@@ -184,20 +184,20 @@ def faktury_database():
         df = pd.DataFrame(data=None)
 
         # Possible to get this in 1 line but this will look unreadable and ugly
-        material.append(re.findall('1\. .+\n+2|1. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('2\. .+\n+3|2. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('3\. .+\n+4|3. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('4\. .+\n+5|4. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('5\. .+\n+6|5. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('6\. .+\n+7|6. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('7\. .+\n+8|7. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('8\. .+\n+9|8. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('9\. .+\n+10|9. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('10\. .+\n+11|10. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('11\. .+\n+12|11. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('12\. .+\n+13|12. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('13\. .+\n+14|13. .+\n+PODSUMOWANIE', text))
-        material.append(re.findall('14\. .+\n+15|14. .+\n+PODSUMOWANIE', text))
+        material.append(re.findall('1\. .+\n+2|1. .+\n+PODSUMOWANIE|1\. .+\n+', text))
+        material.append(re.findall('2\. .+\n+3|2. .+\n+PODSUMOWANIE|.{1,4} .+\n+3\.', text))
+        material.append(re.findall('3\. .+\n+4|3. .+\n+PODSUMOWANIE|.{1,4} .+\n+4\.', text))
+        material.append(re.findall('4\. .+\n+5|4. .+\n+PODSUMOWANIE|.{1,4} .+\n+5\.', text))
+        material.append(re.findall('5\. .+\n+6|5. .+\n+PODSUMOWANIE|.{1,4} .+\n+6\.', text))
+        material.append(re.findall('6\. .+\n+7|6. .+\n+PODSUMOWANIE|.{1,4} .+\n+7\.', text))
+        material.append(re.findall('7\. .+\n+8|7. .+\n+PODSUMOWANIE|.{1,4} .+\n+8\.', text))
+        material.append(re.findall('8\. .+\n+9|8. .+\n+PODSUMOWANIE|.{1,4} .+\n+9\.', text))
+        material.append(re.findall('9\. .+\n+10|9. .+\n+PODSUMOWANIE|.{1,4} .+\n+10\.', text))
+        material.append(re.findall('10\. .+\n+11|10. .+\n+PODSUMOWANIE|.{1,4} .+\n+11\.', text))
+        material.append(re.findall('11\. .+\n+12|11. .+\n+PODSUMOWANIE|.{1,4} .+\n+12\.', text))
+        material.append(re.findall('12\. .+\n+13|12. .+\n+PODSUMOWANIE|.{1,4} .+\n+13\.', text))
+        material.append(re.findall('13\. .+\n+14|13. .+\n+PODSUMOWANIE|.{1,4} .+\n+14\.', text))
+        material.append(re.findall('14\. .+\n+15|14. .+\n+PODSUMOWANIE|.{1,4} .+\n+15\.', text))
 
         for lista in material:
             rajnert_material.extend(lista)
@@ -207,6 +207,7 @@ def faktury_database():
         df['Nazwa Materiału'] = df['Nazwa Materiału'].replace(regex=[r'\d. '], value='')
         df['Nazwa Materiału'] = df['Nazwa Materiału'].replace(regex=[r'\n\d'], value='')
         df['Nazwa Materiału'] = df['Nazwa Materiału'].replace(regex=[r'\n', r'\n\n'], value='')
+        df['Nazwa Materiału'] = df['Nazwa Materiału'].replace(regex=[r'\*', r'\.'], value='')
 
         ilosc = re.findall('\n+.+ sz.? |\n+.+kp.? ', text)
         df['Ilość'] = ilosc
@@ -269,7 +270,7 @@ def faktury_database():
 
     writer.sheets['Sheet1'].set_column(0, 0, 7)
     writer.sheets['Sheet1'].set_column(1, 1, 10)
-    writer.sheets['Sheet1'].set_column(2, 2, 60)
+    writer.sheets['Sheet1'].set_column(2, 2, 40)
     writer.sheets['Sheet1'].set_column(3, 3, 5)
     writer.sheets['Sheet1'].set_column(4, 4, 7)
     writer.sheets['Sheet1'].set_column(5, 5, 14)
