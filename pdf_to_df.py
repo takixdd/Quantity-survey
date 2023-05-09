@@ -291,5 +291,5 @@ def faktury_database():
         df_arch.to_excel(os.path.join(archiwum, 'Faktury materiały.xlsx'))
         old_name = r"/Faktury Archiwum Obmiar GUI/Faktury materiały.xlsx"
         new_name = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        newname = f'{old_name} - {new_name}.xlsx'
+        newname = f'{old_name} - {new_name}'
         os.rename(old_name, newname)
