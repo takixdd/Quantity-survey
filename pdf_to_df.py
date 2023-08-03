@@ -220,7 +220,9 @@ def faktury_database():
         cena = re.findall('\n+.+ sz. [0-9]+,[0,9]+|\n+.+ sz . [0-9]+,[0,9]+|\n+.+ kpl . [0-9]+,[0,9]+|\n+.+ sz.{1,7} [0-9]+,[0,9]+', text)
         df['Cena'] = cena
         df['Cena'] = df['Cena'].replace(regex=[r'\n+\d+'], value='')
-        df['Cena'] = df['Cena'].replace(regex=['... . '], value='')
+        df['Cena'] = df['Cena'].replace(regex=['... " '], value='')
+        df['Cena'] = df['Cena'].replace(regex=['... '], value='')
+        df['Cena'] = df['Cena'].replace(regex=['... \* '], value='')
         df['Cena'] = df['Cena'].replace(regex=['sz.'], value='')
 
         df['Nr faktury'] = f'{os.path.basename(file)}'
@@ -292,5 +294,5 @@ def faktury_database():
         df_arch.to_excel(os.path.join(archiwum, 'Faktury materiały.xlsx'))
         old_name = r"/Faktury Archiwum Obmiar GUI/Faktury materiały.xlsx"
         new_name = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        newname = f'{old_name} - {new_name}'
+        newname = f'{old_name} - {new_name}.xlsx'
         os.rename(old_name, newname)

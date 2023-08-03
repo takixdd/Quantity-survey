@@ -31,7 +31,7 @@ def extract_xlsx():
     df_data = df_all[["Nr Suwnicy", "Data", "Opis prac i wykaz materiału", "Cena"]]
 
     # Wyciągnięcie ilości materiałów z tekstu do nowej kolumny
-    pattern = r'[-][ ]([0-9]+.{1,}|[0-9])+ (?:szt|kpl|op|kg|mb|l|m|m3)'
+    pattern = r'[-][ ]([0-9]+.{1,}|[0-9])+ (?:szt|kpl|op|kg|mb|l|m|m3|km)'
 
     df_data = df_data[["Nr Suwnicy", "Data", "Opis prac i wykaz materiału", "Opis prac i wykaz materiału", "Cena"]]
     df_data.columns = ["Nr Suwnicy", "Data", "Material", "Ilosc", "Cena"]
@@ -56,6 +56,8 @@ def extract_xlsx():
     df_data['Data'] = pd.to_datetime(df_data['Data'], format='%d-%m-%Y', errors='coerce', utc=False)
     df_data = df_data[df_data['Cena'].notna()]
     df_data['Cena'] = df_data['Cena'].round(decimals=3)
+
+    df_data['Material'] = df_data['Material'].replace(regex=[r'[-][ ]([0-9]+.{1,}|[0-9])+ (?:szt|kpl|op|kg|mb|l|m|m3)'], value='').str.join("")
 
     if os.path.exists("dfall.xlsx"):
         os.remove("dfall.xlsx")
