@@ -2,13 +2,23 @@ import pandas as pd
 import subprocess
 from tkinter import filedialog
 import os
+from CTkMessagebox import CTkMessagebox
+import customtkinter
+import threading
 
+def main():
+    loading_info = ()
+    loading_info = 'Ładowanie... Może potrwać ponad 30s'
 
-def extract_xlsx():
+    def ladowanie_info():
+        CTkMessagebox(title="Ładowanie", message=loading_info, option_1="Ok")
+
     path = filedialog.askopenfilename(initialdir="/", title="Dodaj aktualny obmiar",
                                       filetypes=(("pliki excel", "*.xlsx"), ("wszystkie pliki", "*")))
     spreed_sheet = pd.ExcelFile(path)
     ws = spreed_sheet.sheet_names
+
+    threading.Thread(target=ladowanie_info).start()
 
     df = pd.read_excel(path, sheet_name=None, header=1)
 
@@ -21,6 +31,7 @@ def extract_xlsx():
         print(f"Ładowanie nowych danych--->{i}--->{dimensions[0]} wierszy")
 
     print("-"*60)
+    loading_info = 'Grupowanie i filtrowanie danych'
     print('Grupowanie i filtrowanie danych')
 
     # Grupowanie i filtrowanie danych
@@ -67,4 +78,17 @@ def extract_xlsx():
     # Ukrywa plik w systemie windows
     subprocess.check_call(["attrib", "+H", "dfall.xlsx"])
     print("-"*60)
+    loading_info = 'Ładowanie zakończone'
     print("Ładowanie zakończone")
+    threading.Thread(target=ladowanie_info).start()
+
+
+def extract_xlsx():
+    customtkinter.set_appearance_mode("dark")
+    customtkinter.set_default_color_theme("blue")
+    app = customtkinter.CTk()
+    app.withdraw()
+
+    threading.Thread(target=main).start()
+
+    app.mainloop()
