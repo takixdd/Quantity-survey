@@ -183,7 +183,7 @@ def faktury_database():
 
         df = pd.DataFrame(data=None)
 
-        # Possible to get this in 1 line but this will look unreadable and ugly
+        # Possible to get this in 1 line but this will look so bad and unreadable
         material.append(re.findall('1\. .+\n+2|1. .+\n+PODSUMOWANIE|1\. .+\n+', text))
         material.append(re.findall('2\. .+\n+3|2. .+\n+PODSUMOWANIE|.{1,4} .+\n+3\.', text))
         material.append(re.findall('3\. .+\n+4|3. .+\n+PODSUMOWANIE|.{1,4} .+\n+4\.', text))

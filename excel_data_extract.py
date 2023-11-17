@@ -6,6 +6,7 @@ from CTkMessagebox import CTkMessagebox
 import customtkinter
 import threading
 
+
 def main():
     loading_info = ()
     loading_info = 'Ładowanie... Może potrwać ponad 30s'
