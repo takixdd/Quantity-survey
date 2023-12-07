@@ -4,6 +4,7 @@ from tkinter import filedialog
 import os
 from openpyxl.styles import Font, Border, Side, PatternFill, Alignment
 import customtkinter
+import sys
 
 
 def karty_pracy_suwnice():
@@ -73,6 +74,7 @@ def karty_pracy_suwnice():
         df_data.columns = ["Nr rejestru", "Data", "Opis prac i wykaz materiału", "Ilosc", "Cena", "Nr Suwnicy"]
 
         df_data['Data'] = df_data['Data'].replace(regex=[r'r.'], value='')
+        df_data['Data'] = df_data['Data'].replace(regex=[r"^[0-9]{2}-[0-9]{2}-[0-9]{4} - "], value='')
         df_data['Data'] = df_data['Data'].str.findall(r"^[0-9]{2}-[0-9]{2}-[0-9]{4}").str.join("")
         df_data['Data'] = df_data['Data'].replace(r'^s*$', float('NaN'), regex=True)
         df_data['Data'] = df_data['Data'].fillna(method='ffill')
@@ -83,13 +85,12 @@ def karty_pracy_suwnice():
         y = rok
         m = miesiac
 
-        if m == 2:
-            df_data = df_data.loc[(df_data['Data'] >= f'{y}-{m}-01') & (df_data['Data'] <= f'{y}-{m}-28')]
-        elif m == 0:
-            df_data = df_data.loc[df_data['Data'].dt.strftime('%Y') == f'{y}']
-
-        elif m == 1 or m == 3 or m == 5 or m == 7 or m == 8 or m == 10 or m == 12:
+        if m == '1' or m == '3' or m == '5' or m == '7' or m == '8' or m == '10' or m == '12':
             df_data = df_data.loc[(df_data['Data'] >= f'{y}-{m}-01') & (df_data['Data'] <= f'{y}-{m}-31')]
+        elif m == '0':
+            df_data = df_data.loc[df_data['Data'].dt.strftime('%Y') == f'{y}']
+        elif m == '2':
+            df_data = df_data.loc[(df_data['Data'] >= f'{y}-{m}-01') & (df_data['Data'] <= f'{y}-{m}-28')]
         else:
             df_data = df_data.loc[(df_data['Data'] >= f'{y}-{m}-01') & (df_data['Data'] <= f'{y}-{m}-30')]
 
@@ -132,7 +133,7 @@ def karty_pracy_suwnice():
         kolejnosc = []
         for i in df_data['Sortowanie']:
             if i > 0:
-                kolejnosc.append(i*100)
+                kolejnosc.append(i*1000)
             else:
                 kolejnosc.append(kolejnosc[-1] + 1)
 

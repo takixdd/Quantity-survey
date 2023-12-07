@@ -35,6 +35,9 @@ def main():
     loading_info = 'Grupowanie i filtrowanie danych'
     print('Grupowanie i filtrowanie danych')
 
+    # Kopia do wykresów
+    df_plots = df_all.copy()
+
     # Grupowanie i filtrowanie danych
     df_all['Nr Suwnicy'] = df_all['Nr Suwnicy'].fillna(method='ffill')
     df_all['Data'] = df_all['Data'].fillna(method='ffill')
@@ -80,7 +83,52 @@ def main():
     subprocess.check_call(["attrib", "+H", "dfall.xlsx"])
     print("-"*60)
     loading_info = 'Ładowanie zakończone'
-    print("Ładowanie zakończone")
+    print("Ładowanie obmiaru zakończone")
+
+    df_plots = df_plots[["Nr rejestru", "Data", "Opis prac i wykaz materiału", "Cena", "Nr Suwnicy"]]
+    df_plots = df_plots[["Nr rejestru", "Data", "Opis prac i wykaz materiału", "Opis prac i wykaz materiału", "Cena", "Nr Suwnicy", "Opis prac i wykaz materiału"]]
+    df_plots.columns = ["Nr rejestru", "Data", "Opis prac i wykaz materiału", "Ilosc", "Cena", "Nr Suwnicy", "Rbh"]
+    df_plots['Data'] = df_plots['Data'].replace(regex=[r'r.'], value='')
+    df_plots['Data'] = df_plots['Data'].replace(regex=[r"^[0-9]{2}-[0-9]{2}-[0-9]{4} - "], value='')
+    df_plots['Data'] = df_plots['Data'].str.findall(r"^[0-9]{2}-[0-9]{2}-[0-9]{4}").str.join("")
+    df_plots['Data'] = df_plots['Data'].replace(r'^s*$', float('NaN'), regex=True)
+    df_plots['Data'] = df_plots['Data'].fillna(method='ffill')
+    df_plots['Data'] = pd.to_datetime(df_plots['Data'], format='%d-%m-%Y', errors='coerce', utc=False)
+
+    df_plots['Nr Suwnicy'] = df_plots['Nr Suwnicy'].fillna(method='ffill')
+
+    # Wyciągnięcie ilości materiałów z tekstu do nowej kolumny
+    pattern = r'[-][ ]([0-9]+.{1,}|[0-9])+ (?:szt|kpl|op|kg|mb|l|m|m3|km)'
+    pattern_2 = r'[-][ ]([0-9]+.[0-9]|[0-9]+)+ (?:rbh)'
+    pattern_3 = r'[a-zA-Z]+'
+
+    df_plots['Ilosc'] = df_plots['Ilosc'].str.findall(pattern).str.join(", ")
+    df_plots['Ilosc'] = df_plots['Ilosc'].replace(regex=[r','], value='.')
+
+    df_plots['Ilosc'] = pd.to_numeric(df_plots['Ilosc'], errors='coerce')
+    df_plots['Cena'] = pd.to_numeric(df_plots['Cena'], errors='coerce')
+
+    df_plots['Wartosc'] = df_plots['Ilosc'] * df_plots['Cena']
+    df_plots['Wartosc'] = df_plots['Wartosc'].round(decimals=2)
+
+    df_plots['Rbh'] = df_plots['Rbh'].str.findall(pattern_2).str.join(", ")
+    df_plots['Rbh'] = df_plots['Rbh'].replace(regex=[r','], value='.')
+    df_plots['Rbh'] = pd.to_numeric(df_plots['Rbh'], errors='coerce')
+
+    df_plots['Nr Suwnicy'] = df_plots['Nr Suwnicy'].replace(regex=[pattern_3], value='')
+    df_plots['Nr Suwnicy'] = df_plots['Nr Suwnicy'].replace(regex=[r'-'], value='')
+    df_plots['Nr Suwnicy'] = df_plots['Nr Suwnicy'].replace(regex=[r' '], value='')
+
+    df_plots = df_plots[df_plots['Opis prac i wykaz materiału'].str.contains("kz") == False]
+    df_plots = df_plots[df_plots['Opis prac i wykaz materiału'].str.contains("Kz") == False]
+    df_plots = df_plots[df_plots['Opis prac i wykaz materiału'].str.contains("faktura") == False]
+    df_plots = df_plots[df_plots['Opis prac i wykaz materiału'].str.contains("Faktura") == False]
+
+    if os.path.exists("dfplot.xlsx"):
+        os.remove("dfplot.xlsx")
+    df_plots.to_excel("dfplot.xlsx", index=False)
+    subprocess.check_call(["attrib", "+H", "dfplot.xlsx"])
+    print('Baza do wykresów została załadowana')
     threading.Thread(target=ladowanie_info).start()
 
 
